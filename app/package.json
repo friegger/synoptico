@@ -1,0 +1,9 @@
+{
+  "name": "Synoptico",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "baconjs": "^0.7.89",
+    "ramda": "^0.23.0"
+  }
+}

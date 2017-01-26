@@ -1,0 +1,22 @@
+{
+	"webviews": [{
+		"url": "https://bosh-cpi-tmp.ci.cf-app.com/teams/sap/pipelines/bosh-openstack-cpi",
+		"position": {"top":"0%","left":"0%","height":"50%","width":"50%","zIndex":"1"}
+	},{
+		"url": "https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/certify-openstack",
+		"position": {"top":"50%","left":"0%","height":"50%","width":"50%","zIndex":"2"}
+	},{
+		"url": "https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/validator",
+		"position": {"top":"75%","left":"0%","height":"25%","width":"20%","zIndex":"3"}
+	},{
+		"url": "https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/bosh-openstack-cpi-mitaka",
+		"position": {"top":"0%","left":"50%","height":"50%","width":"50%","zIndex":"4"}
+	},{
+		"url": "https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/certify-openstack-mitaka",
+		"position": {"top":"50%","left":"50%","height":"50%","width":"50%","zIndex":"5"}
+	},{
+		"url": "https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/validator-mitaka",
+		"position": {"top":"75%","left":"50%","height":"25%","width":"20%","zIndex":"6"}
+	}],
+	"name": "Synoptico Sample Dashboard"
+}

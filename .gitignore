@@ -1,0 +1,6 @@
+elm-stuff
+app/elm.js
+node_modules/
+app/node_modules/
+.idea/
+out/

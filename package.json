@@ -1,0 +1,26 @@
+{
+  "name": "synoptico-dev",
+  "version": "0.1.0",
+  "scripts": {
+    "elm": "elm make elm/src/App.elm --output app/elm.js || true",
+    "elm-test": "elm-test elm/tests/Main.elm || true",
+    "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
+    "start": "ELECTRON_ENV=development electron app",
+    "watch": "npm run start & npm run elm:watch & wait",
+    "package-darwin": "electron-packager ./app Synoptico --platform darwin --arch x64 --out out --overwrite",
+    "package-linux": "electron-packager ./app Synoptico --platform linux --arch x64 --out out --overwrite",
+    "package-all": "electron-packager ./app Synoptico --platform all --arch x64 --out out --overwrite"
+  },
+  "devDependencies": {
+    "chokidar": "^1.6.0",
+    "chokidar-cli": "^1.2.0",
+    "electron": "^1.4.1",
+    "electron-packager": "^8.0.0",
+    "elm": "^0.18.0",
+    "elm-test": "^0.18.0"
+  },
+  "dependencies": {
+    "baconjs": "^0.7.89",
+    "ramda": "^0.23.0"
+  }
+}
