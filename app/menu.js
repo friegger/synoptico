@@ -168,7 +168,7 @@ exports.Menu = function() {
 };
 
 exports.DockMenu = () => {
-	if (app.dock.setMenu) {
+	if (app.dock) {
 		return B.fromBinder(sink => {
 			const dockMenu = Menu.buildFromTemplate([
 				{label: 'New Window', click: () => sink()},
