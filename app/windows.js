@@ -1,9 +1,8 @@
-const {BrowserWindow} = require('electron')
 const {flip, reject, equals} = require('ramda')
 const B = require('baconjs')
 const fromEvent = flip(B.fromEvent)
 
-const openWindow = (message) => {
+const openWindow = BrowserWindow => message => {
 	const window = new BrowserWindow({width: 800, height: 600})
 	window.loadURL('file://' + __dirname + '/index.html')
 
@@ -24,10 +23,10 @@ const sendMessage = ({window, message}) => {
 	return window
 }
 
-exports.Windows = ($newWindowRequest) => {
+exports.Windows = (BrowserWindow, $newWindowRequest) => {
 	const $windowCreated =
 		$newWindowRequest
-			.map(openWindow)
+			.map(openWindow(BrowserWindow))
 			.map(sendMessage)
 
 	const $windowClosed =

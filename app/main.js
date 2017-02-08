@@ -1,4 +1,4 @@
-const {app} = require('electron')
+const {app, BrowserWindow} = require('electron')
 const {Menu, DockMenu} = require('./menu')
 const {equals, not} = require('ramda')
 const {Windows} = require('./windows')
@@ -13,7 +13,7 @@ B.fromEvent(app, 'ready').onValue(() => {
 		B.once()
 	)
 
-	const $windows = Windows($newWindowRequest)
+	const $windows = Windows(BrowserWindow, $newWindowRequest)
 	$windows.onError(err => console.log(err))
 
 	if (isDev) {

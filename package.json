@@ -9,15 +9,18 @@
     "watch": "npm run start & npm run elm:watch & wait",
     "package-darwin": "electron-packager ./app Synoptico --platform darwin --arch x64 --out out --overwrite",
     "package-linux": "electron-packager ./app Synoptico --platform linux --arch x64 --out out --overwrite",
-    "package-all": "electron-packager ./app Synoptico --platform all --arch x64 --out out --overwrite"
+    "package-all": "electron-packager ./app Synoptico --platform all --arch x64 --out out --overwrite",
+    "test": "mocha tests"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "chokidar": "^1.6.0",
     "chokidar-cli": "^1.2.0",
     "electron": "^1.4.1",
     "electron-packager": "^8.0.0",
     "elm": "^0.18.0",
-    "elm-test": "^0.18.0"
+    "elm-test": "^0.18.0",
+    "mocha": "^3.2.0"
   },
   "dependencies": {
     "baconjs": "^0.7.89",
