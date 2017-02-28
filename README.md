@@ -15,6 +15,14 @@ $ npm run elm #-> compiles the Elm code
 $ npm start
 ```
 
+# How to run the tests
+
+```
+$ npm install #-> only required once
+$ npm test #-> executes the JS and the Elm tests
+```
+
+
 # Building
 
 ```

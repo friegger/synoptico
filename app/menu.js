@@ -1,7 +1,6 @@
-const {app, Menu} = require('electron')
 const B = require('baconjs')
 
-exports.Menu = function() {
+exports.WindowMenu = function(app, Menu) {
 
 	return B.fromBinder(sink => {
 		const template = [
@@ -32,14 +31,14 @@ exports.Menu = function() {
 					{
 						label: 'Reload',
 						accelerator: 'CmdOrCtrl+R',
-						click (item, focusedWindow) {
+						click (_, focusedWindow) {
 							if (focusedWindow) focusedWindow.reload()
 						}
 					},
 					{
 						label: 'Toggle Developer Tools',
 						accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-						click (item, focusedWindow) {
+						click (_, focusedWindow) {
 							if (focusedWindow) focusedWindow.webContents.toggleDevTools()
 						}
 					},
@@ -167,7 +166,7 @@ exports.Menu = function() {
 	})
 };
 
-exports.DockMenu = () => {
+exports.DockMenu = (app, Menu) => {
 	if (app.dock) {
 		return B.fromBinder(sink => {
 			const dockMenu = Menu.buildFromTemplate([

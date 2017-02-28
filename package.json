@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "scripts": {
     "elm": "elm make elm/src/App.elm --output app/elm.js || true",
-    "elm-test": "elm-test elm/tests/Main.elm || true",
+    "elm-tests": "elm-test elm/tests/Main.elm || true",
     "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
     "start": "ELECTRON_ENV=development electron app",
     "watch": "npm run start & npm run elm:watch & wait",
     "package-darwin": "electron-packager ./app Synoptico --platform darwin --arch x64 --out out --overwrite",
     "package-linux": "electron-packager ./app Synoptico --platform linux --arch x64 --out out --overwrite",
     "package-all": "electron-packager ./app Synoptico --platform all --arch x64 --out out --overwrite",
-    "test": "mocha tests"
+    "js-tests": "mocha tests",
+    "test": "npm run js-tests && npm run elm-tests"
   },
   "devDependencies": {
     "chai": "^3.5.0",
