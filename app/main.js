@@ -5,6 +5,7 @@ const {Windows} = require('./windows')
 const B = require('baconjs')
 
 const isDev = process.env.ELECTRON_ENV == 'development'
+app.commandLine.appendSwitch('--ignore-certificate-errors')
 
 B.fromEvent(app, 'ready').onValue(() => {
 	const $newWindowRequest = B.mergeAll(
