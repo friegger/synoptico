@@ -41,6 +41,7 @@ type alias WebView =
     , timer : Maybe Int
     }
 
+
 type alias ScreenPosition =
     { top : String
     , left : String
@@ -91,7 +92,7 @@ createTimer : Int -> WebView -> Sub Msg
 createTimer index webview =
     case webview.timer of
         Just timer ->
-            Time.every ((toFloat timer) * second) (\_ -> RotateWebView index)
+            Time.every ((toFloat timer) * second) (\_ -> RotateWebViewUrl index)
 
         Nothing ->
             Sub.none
@@ -104,7 +105,7 @@ createTimer index webview =
 type Msg
     = Mdl (Material.Msg Msg)
     | OpenSynopticoSet (Maybe SynopticoSet)
-    | RotateWebView Int
+    | RotateWebViewUrl Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -116,28 +117,27 @@ update msg model =
         OpenSynopticoSet synopticoSet ->
             ( { model | synopticoSet = synopticoSet }, Cmd.none )
 
-        RotateWebView index ->
-            ( { model | synopticoSet = rotateUrl model.synopticoSet index }, Cmd.none )
+        RotateWebViewUrl webviewIndex ->
+            ( { model | synopticoSet = rotateUrlOf model.synopticoSet webviewIndex }, Cmd.none )
 
 
-rotateUrl set index =
+rotateUrlOf set webviewIndex =
     case set of
         Just set ->
-            let
-                webviews =
-                    List.indexedMap (updateWebView index) set.webviews
-            in
-                Just { set | webviews = webviews }
+            Just { set | webviews = rotateUrl webviewIndex set.webviews }
 
         Nothing ->
             Nothing
 
 
-updateWebView index currentIndex webview =
-    if index == currentIndex then
-        { webview | urls = shift webview.urls }
-    else
-        webview
+rotateUrl webviewIndex =
+    List.indexedMap
+        (\index webview ->
+            if webviewIndex == index then
+                { webview | urls = shift webview.urls }
+            else
+                webview
+        )
 
 
 shift : List a -> List a
