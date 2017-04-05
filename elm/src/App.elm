@@ -8,7 +8,11 @@ import Material.Scheme
 import Material.Options as Options
 import Material.Elevation as Elevation
 import List
+import Dict
 import Json.Encode as Json
+import Time exposing (Time, second)
+import Maybe exposing (withDefault)
+import Array
 
 
 main =
@@ -32,10 +36,10 @@ type alias SynopticoSet =
 
 
 type alias WebView =
-    { url : String
+    { urls : List String
     , position : ScreenPosition
+    , timer : Maybe Int
     }
-
 
 type alias ScreenPosition =
     { top : String
@@ -68,7 +72,29 @@ port openSynopticoSet : (Maybe SynopticoSet -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    openSynopticoSet OpenSynopticoSet
+    let
+        webviews =
+            case model.synopticoSet of
+                Just set ->
+                    set.webviews
+
+                Nothing ->
+                    []
+    in
+        Sub.batch
+            [ openSynopticoSet OpenSynopticoSet
+            , Sub.batch (List.indexedMap createTimer webviews)
+            ]
+
+
+createTimer : Int -> WebView -> Sub Msg
+createTimer index webview =
+    case webview.timer of
+        Just timer ->
+            Time.every ((toFloat timer) * second) (\_ -> RotateWebView index)
+
+        Nothing ->
+            Sub.none
 
 
 
@@ -78,6 +104,7 @@ subscriptions model =
 type Msg
     = Mdl (Material.Msg Msg)
     | OpenSynopticoSet (Maybe SynopticoSet)
+    | RotateWebView Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -88,6 +115,39 @@ update msg model =
 
         OpenSynopticoSet synopticoSet ->
             ( { model | synopticoSet = synopticoSet }, Cmd.none )
+
+        RotateWebView index ->
+            ( { model | synopticoSet = rotateUrl model.synopticoSet index }, Cmd.none )
+
+
+rotateUrl set index =
+    case set of
+        Just set ->
+            let
+                webviews =
+                    List.indexedMap (updateWebView index) set.webviews
+            in
+                Just { set | webviews = webviews }
+
+        Nothing ->
+            Nothing
+
+
+updateWebView index currentIndex webview =
+    if index == currentIndex then
+        { webview | urls = shift webview.urls }
+    else
+        webview
+
+
+shift : List a -> List a
+shift list =
+    case list of
+        head :: tail ->
+            List.append tail [ head ]
+
+        [] ->
+            []
 
 
 
@@ -110,7 +170,7 @@ viewSynopticoSet synopticoSet =
             div [] []
 
 
-webview { url, position } =
+webview { urls, position } =
     Options.div
         [ Elevation.e24
         , Options.css "position" "absolute"
@@ -121,7 +181,7 @@ webview { url, position } =
         , Options.css "z-index" position.zIndex
         ]
         [ node "webview"
-            [ src url
+            [ src <| withDefault "" <| List.head urls
             , style [ ( "height", "100%" ), ( "width", "100%" ) ]
             , Html.Attributes.property "allowpopups" (Json.bool True)
             ]

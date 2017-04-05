@@ -23,4 +23,18 @@ all =
                           }
                         , Cmd.none
                         )
+        , describe "shift"
+            [ describe "given an empty list"
+                [ test "returns an empty list" <|
+                    \() -> App.shift [] |> Expect.equal []
+                ]
+            , describe "given a list with a single item"
+                [ test "returns the list" <|
+                    \() -> App.shift [ 1 ] |> Expect.equal [ 1 ]
+                ]
+            , describe "given a list with 3 elements"
+                [ test "returns a list where the first element has been appended" <|
+                    \() -> App.shift [ 1, 2, 3 ] |> Expect.equal [ 2, 3, 1 ]
+                ]
+            ]
         ]
