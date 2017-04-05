@@ -17,8 +17,8 @@
     "chai": "^3.5.0",
     "chokidar": "^1.6.0",
     "chokidar-cli": "^1.2.0",
-    "electron": "^1.4.1",
-    "electron-packager": "^8.0.0",
+    "electron": "^1.6.2",
+    "electron-packager": "^8.6.0",
     "elm": "^0.18.0",
     "elm-test": "^0.18.0",
     "mocha": "^3.2.0"
