@@ -9,7 +9,8 @@
     "watch": "npm run start & npm run elm:watch & wait",
     "package-darwin": "electron-packager ./app Synoptico --platform darwin --arch x64 --out out --overwrite",
     "package-linux": "electron-packager ./app Synoptico --platform linux --arch x64 --out out --overwrite",
-    "package-all": "electron-packager ./app Synoptico --platform all --arch x64 --out out --overwrite",
+    "package-windows": "electron-packager ./app Synoptico --platform win32 --arch x64 --out out --overwrite",
+    "package-all": "npm run package-darwin && npm run package-linux && npm run package-windows",
     "js-tests": "mocha tests",
     "test": "npm run js-tests && npm run elm-tests"
   },
