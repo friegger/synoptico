@@ -57,6 +57,91 @@ all =
                     in
                         App.rotateUrlOf set 1 |> Expect.equal expectedSet
             ]
+        , describe "synopticoSetDecoder"
+            [ describe "when timer is given"
+                [ test "decodes timer to Just <given value>" <|
+                    \() ->
+                        Expect.equal
+                            (Json.Decode.decodeString
+                                App.synopticoSetDecoder
+                                """
+                                    {
+                                      "webviews": [{
+                                          "urls": ["https://domain.com", "https://domain.com"],
+                                          "position": {"top":"0%","left":"0%","height":"100%","width":"100%","zIndex":"1"},
+                                          "timer": 5
+                                      }],
+                                      "name": "SynopticoSet"
+                                    }
+                                """
+                            )
+                            (Ok
+                                (App.SynopticoSet
+                                    [ App.WebView
+                                        [ "https://domain.com", "https://domain.com" ]
+                                        (App.ScreenPosition "0%" "0%" "100%" "100%" "1")
+                                        (Just 5)
+                                    ]
+                                    "SynopticoSet"
+                                )
+                            )
+                ]
+            , describe "when timer is null"
+                [ test "decodes timer to Nothing" <|
+                    \() ->
+                        Expect.equal
+                            (Json.Decode.decodeString
+                                App.synopticoSetDecoder
+                                """
+                                     {
+                                         "webviews": [{
+                                             "urls": ["https://domain.com"],
+                                             "position": {"top":"0%","left":"0%","height":"100%","width":"100%","zIndex":"1"},
+                                             "timer": null
+                                         }],
+                                         "name": "SynopticoSet"
+                                     }
+                                """
+                            )
+                            (Ok
+                                (App.SynopticoSet
+                                    [ App.WebView
+                                        [ "https://domain.com" ]
+                                        (App.ScreenPosition "0%" "0%" "100%" "100%" "1")
+                                        Nothing
+                                    ]
+                                    "SynopticoSet"
+                                )
+                            )
+                ]
+            , describe "when timer is not given"
+                [ test "decodes timer to Nothing" <|
+                    \() ->
+                        Expect.equal
+                            (Json.Decode.decodeString
+                                App.synopticoSetDecoder
+                                """
+                                     {
+                                         "webviews": [{
+                                             "urls": ["https://domain.com"],
+                                             "position": {"top":"0%","left":"0%","height":"100%","width":"100%","zIndex":"1"}
+                                         }],
+                                         "name": "SynopticoSet"
+                                     }
+                                """
+                            )
+                            (Ok
+                                (App.SynopticoSet
+                                    [ App.WebView
+                                        [ "https://domain.com" ]
+                                        (App.ScreenPosition "0%" "0%" "100%" "100%" "1")
+                                        Nothing
+                                    ]
+                                    "SynopticoSet"
+                                )
+                            )
+                ]
+            ]
         ]
 
 

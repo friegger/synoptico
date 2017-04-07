@@ -13,6 +13,8 @@ import Json.Encode as Json
 import Time exposing (Time, second)
 import Maybe exposing (withDefault)
 import Array
+import Json.Decode as Decode
+import Json.Decode.Pipeline as DecodeP
 
 
 main =
@@ -64,9 +66,9 @@ init =
 -- PORTS
 
 
-port openSynopticoSet : (Maybe SynopticoSet -> msg) -> Sub msg
+port openSynopticoSet : (Decode.Value -> msg) -> Sub msg
 
-
+port error : String -> Cmd msg
 
 -- SUBSCRIPTIONS
 
@@ -83,7 +85,7 @@ subscriptions model =
                     []
     in
         Sub.batch
-            [ openSynopticoSet OpenSynopticoSet
+            [ openSynopticoSet ( Decode.decodeValue (Decode.nullable synopticoSetDecoder) >> OpenSynopticoSet)
             , Sub.batch (List.indexedMap createTimer webviews)
             ]
 
@@ -98,13 +100,35 @@ createTimer index webview =
             Sub.none
 
 
+synopticoSetDecoder =
+    DecodeP.decode SynopticoSet
+        |> DecodeP.required "webviews" (Decode.list webViewDecoder)
+        |> DecodeP.required "name" Decode.string
+
+
+webViewDecoder =
+    DecodeP.decode WebView
+        |> DecodeP.required "urls" (Decode.list Decode.string)
+        |> DecodeP.required "position" screenPositionDecoder
+        |> DecodeP.optional "timer" (Decode.nullable Decode.int) Nothing
+
+
+screenPositionDecoder =
+    DecodeP.decode ScreenPosition
+        |> DecodeP.required "top" Decode.string
+        |> DecodeP.required "left" Decode.string
+        |> DecodeP.required "height" Decode.string
+        |> DecodeP.required "width" Decode.string
+        |> DecodeP.required "zIndex" Decode.string
+
+
 
 -- UPDATE
 
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | OpenSynopticoSet (Maybe SynopticoSet)
+    | OpenSynopticoSet (Result String (Maybe SynopticoSet))
     | RotateWebViewUrl Int
 
 
@@ -114,8 +138,14 @@ update msg model =
         Mdl msg_ ->
             Material.update Mdl msg_ model
 
-        OpenSynopticoSet synopticoSet ->
-            ( { model | synopticoSet = synopticoSet }, Cmd.none )
+        OpenSynopticoSet synopticoSetResult ->
+             case synopticoSetResult of
+                  Ok synopticoSet ->
+                        ( { model | synopticoSet = synopticoSet }, Cmd.none )
+
+                  Err errorMsg ->
+                        ( { model | synopticoSet = Nothing }, error errorMsg )
+
 
         RotateWebViewUrl webviewIndex ->
             ( { model | synopticoSet = rotateUrlOf model.synopticoSet webviewIndex }, Cmd.none )

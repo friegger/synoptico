@@ -38,6 +38,9 @@ const $onDrop = B.fromEvent(document.body, 'drop')
 	.doAction('preventDefault')
 	.flatMap(getFilePath)
 
+B.fromBinder(sink => app.ports.error.subscribe(sink))
+	.onValue(msg => window.alert(msg))
+
 B.fromEvent(ipcRenderer, 'open-file')
 	.flatMap(openDialog)
 	.merge($onDrop)
