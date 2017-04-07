@@ -5,7 +5,15 @@ The goal of the project is mainly to get familiar with Elm, Electron and Bacon.j
 used together and to learn more about functional programming techniques in general. Feedback is very
 welcome.
 
+# Usage
+
+1. Create a `json` file following the format of the sample here: https://raw.githubusercontent.com/friegger/synoptico/v0.1.1/docs/examples/sample.json
+
+2. Open the file via the `Open File...` menu entry or just drag it onto the app window. 
+
 # How to run locally
+
+
 
 It has been tested with Node.js 6+.
 
