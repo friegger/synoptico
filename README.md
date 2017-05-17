@@ -7,13 +7,14 @@ welcome.
 
 # Usage
 
-1. Create a `json` file following the format of the sample here: https://raw.githubusercontent.com/friegger/synoptico/v0.1.1/docs/examples/sample.json
+1. Create a `json` file describing the URLs to aggregate. The [releases](https://github.com/friegger/synoptico/releases) reference a `sample.json` file with
+   the required format.
 
 2. Open the file via the `Open File...` menu entry or just drag it onto the app window. 
 
-# How to run locally
+# Development
 
-
+## How to run locally
 
 It has been tested with Node.js 6+.
 
@@ -23,7 +24,7 @@ $ npm run elm #-> compiles the Elm code
 $ npm start
 ```
 
-# How to run the tests
+## How to run the tests
 
 ```
 $ npm install #-> only required once
@@ -31,7 +32,7 @@ $ npm test #-> executes the JS and the Elm tests
 ```
 
 
-# Building
+## Building
 
 ```
 $ cd app
@@ -39,6 +40,7 @@ $ npm install
 $ cd ..
 $ npm run package-linux
 $ npm run package-darwin
+$ npm run package-windows
 ```
 
 
