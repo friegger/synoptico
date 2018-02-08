@@ -3,6 +3,8 @@ port module App exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Svg as S
+import Svg.Attributes as SA
 import List
 import Dict
 import Json.Encode as Json
@@ -64,6 +66,7 @@ port openSynopticoSet : (Decode.Value -> msg) -> Sub msg
 
 port error : String -> Cmd msg
 
+port openFile: () -> Cmd msg
 
 
 -- SUBSCRIPTIONS
@@ -124,6 +127,7 @@ screenPositionDecoder =
 
 type Msg
     = OpenSynopticoSet (Result String (Maybe SynopticoSet))
+    | OpenFile
     | RotateWebViewUrl Int
 
 
@@ -137,6 +141,9 @@ update msg model =
 
                 Err errorMsg ->
                     ( { model | synopticoSet = Nothing }, error errorMsg )
+
+        OpenFile ->
+            ( model, openFile () )
 
         RotateWebViewUrl webviewIndex ->
             ( { model | synopticoSet = rotateUrlOf model.synopticoSet webviewIndex }, Cmd.none )
@@ -185,15 +192,16 @@ viewSynopticoSet : Maybe SynopticoSet -> Html Msg
 viewSynopticoSet synopticoSet =
     case synopticoSet of
         Just synopticoSet ->
-            div [ style [ ( "display", "flex" ) ] ] (List.map webview synopticoSet.webviews)
+            div [ class "flex" ] (List.map webview synopticoSet.webviews)
 
         Nothing ->
-            div [] []
+            div [] [ noWebview ]
 
 
 webview { urls, position } =
-    Html.div
-        [ Html.Attributes.style
+    div
+        [ class "bg-washed-blue shadow-4"
+        , style
             [ ( "position", "absolute" )
             , ( "top", position.top )
             , ( "left", position.left )
@@ -208,4 +216,24 @@ webview { urls, position } =
             , Html.Attributes.property "allowpopups" (Json.bool True)
             ]
             []
+        ]
+
+noWebview = 
+    div [ class "absolute w-100 h-100 tc flex flex-column items-center justify-center sans-serif black-10 bg-washed-blue" ]
+        [ div [ class "f2 fw6 lh-title pa2" ]
+            [ text "Drag & drop a Synoptico dashboard file here" ]
+        , div [ class "f3 lh-copy pa1 pa2" ]
+            [ span [ class "pr1" ]
+                [ text "Or press" ]
+            , a [ onClick OpenFile, class "pa2 bg-black-40 hover-bg-black-50 pointer bg-animate shadow-4 br2 white inline-flex" ]
+                [ span [ class "pr2" ]
+                    [ text "Open" ]
+                , S.svg [ SA.width "24", SA.height "24", SA.viewBox "0 0 24 24", SA.fill "none", SA.stroke "currentColor", SA.strokeWidth "2", SA.strokeLinecap "round", SA.strokeLinejoin "round", SA.class "feather feather-command white self-center", SA.color "#384047" ]
+                    [ S.path [ SA.d "M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" ]
+                        []
+                    ]
+                , span [ class "" ]
+                    [ text "O" ]
+                ]
+            ]
         ]

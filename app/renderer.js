@@ -13,6 +13,9 @@ const openDialog = () => {
 	const paths = dialog.showOpenDialog({
 		title: 'Open File'
 	})
+
+	remote.getCurrentWindow().show()
+
 	const path = paths ? head(paths) : null
 
 	return path ? path : B.never()
@@ -41,7 +44,10 @@ const $onDrop = B.fromEvent(document.body, 'drop')
 B.fromBinder(sink => app.ports.error.subscribe(sink))
 	.onValue(msg => window.alert(msg))
 
+const $onOpenFile = B.fromBinder(sink => app.ports.openFile.subscribe(sink))
+
 B.fromEvent(ipcRenderer, 'open-file')
+	.merge($onOpenFile)
 	.flatMap(openDialog)
 	.merge($onDrop)
 	.flatMap(loadFile)

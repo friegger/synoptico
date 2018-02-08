@@ -3,7 +3,7 @@ const B = require('baconjs')
 const fromEvent = flip(B.fromEvent)
 
 const openWindow = BrowserWindow => message => {
-	const window = new BrowserWindow({width: 800, height: 600})
+	const window = new BrowserWindow({width: 800, height: 600, show: false, backgroundColor: 'f6fffe'})
 	window.loadURL('file://' + __dirname + '/index.html')
 
 	return {
@@ -12,13 +12,14 @@ const openWindow = BrowserWindow => message => {
 	}
 }
 
-const sendMessage = ({window, message}) => {
-	if (message) {
-		fromEvent('did-finish-load', window.webContents)
-			.onValue((event) => {
-				event.sender.send(message)
-			})
-	}
+const showWindow = ({window, message}) => {
+	fromEvent('ready-to-show', window).onValue(event => {
+		if (message) {
+			event.sender.send(message)
+		} else {
+			window.show()
+		}
+	})
 
 	return window
 }
@@ -27,7 +28,7 @@ exports.Windows = (BrowserWindow, $newWindowRequest) => {
 	const $windowCreated =
 		$newWindowRequest
 			.map(openWindow(BrowserWindow))
-			.map(sendMessage)
+			.map(showWindow)
 
 	const $windowClosed =
 		$windowCreated
