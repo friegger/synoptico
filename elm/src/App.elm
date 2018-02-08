@@ -3,10 +3,6 @@ port module App exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Material
-import Material.Scheme
-import Material.Options as Options
-import Material.Elevation as Elevation
 import List
 import Dict
 import Json.Encode as Json
@@ -27,7 +23,6 @@ main =
 
 type alias Model =
     { synopticoSet : Maybe SynopticoSet
-    , mdl : Material.Model
     }
 
 
@@ -55,9 +50,7 @@ type alias ScreenPosition =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { synopticoSet = Nothing
-      , mdl = Material.model
-      }
+    ( { synopticoSet = Nothing }
     , Cmd.none
     )
 
@@ -68,7 +61,10 @@ init =
 
 port openSynopticoSet : (Decode.Value -> msg) -> Sub msg
 
+
 port error : String -> Cmd msg
+
+
 
 -- SUBSCRIPTIONS
 
@@ -85,7 +81,7 @@ subscriptions model =
                     []
     in
         Sub.batch
-            [ openSynopticoSet ( Decode.decodeValue (Decode.nullable synopticoSetDecoder) >> OpenSynopticoSet)
+            [ openSynopticoSet (Decode.decodeValue (Decode.nullable synopticoSetDecoder) >> OpenSynopticoSet)
             , Sub.batch (List.indexedMap createTimer webviews)
             ]
 
@@ -127,25 +123,20 @@ screenPositionDecoder =
 
 
 type Msg
-    = Mdl (Material.Msg Msg)
-    | OpenSynopticoSet (Result String (Maybe SynopticoSet))
+    = OpenSynopticoSet (Result String (Maybe SynopticoSet))
     | RotateWebViewUrl Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Mdl msg_ ->
-            Material.update Mdl msg_ model
-
         OpenSynopticoSet synopticoSetResult ->
-             case synopticoSetResult of
-                  Ok synopticoSet ->
-                        ( { model | synopticoSet = synopticoSet }, Cmd.none )
+            case synopticoSetResult of
+                Ok synopticoSet ->
+                    ( { model | synopticoSet = synopticoSet }, Cmd.none )
 
-                  Err errorMsg ->
-                        ( { model | synopticoSet = Nothing }, error errorMsg )
-
+                Err errorMsg ->
+                    ( { model | synopticoSet = Nothing }, error errorMsg )
 
         RotateWebViewUrl webviewIndex ->
             ( { model | synopticoSet = rotateUrlOf model.synopticoSet webviewIndex }, Cmd.none )
@@ -201,14 +192,15 @@ viewSynopticoSet synopticoSet =
 
 
 webview { urls, position } =
-    Options.div
-        [ Elevation.e24
-        , Options.css "position" "absolute"
-        , Options.css "top" position.top
-        , Options.css "left" position.left
-        , Options.css "width" position.width
-        , Options.css "height" position.height
-        , Options.css "z-index" position.zIndex
+    Html.div
+        [ Html.Attributes.style
+            [ ( "position", "absolute" )
+            , ( "top", position.top )
+            , ( "left", position.left )
+            , ( "width", position.width )
+            , ( "height", position.height )
+            , ( "z-index", position.zIndex )
+            ]
         ]
         [ node "webview"
             [ src <| withDefault "" <| List.head urls

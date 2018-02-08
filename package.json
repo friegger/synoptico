@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "elm": "elm make elm/src/App.elm --output app/elm.js || true",
-    "elm-tests": "elm-test elm/tests/Main.elm || true",
+    "elm-tests": "elm-test elm/tests/Tests.elm || true",
     "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
     "start": "ELECTRON_ENV=development electron app",
     "watch": "npm run start & npm run elm:watch & wait",
@@ -17,16 +17,16 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "chokidar": "^1.6.0",
+    "chokidar": "^1.7.0",
     "chokidar-cli": "^1.2.0",
-    "electron": "^1.6.2",
-    "electron-packager": "^8.6.0",
+    "electron": "^1.8.2",
+    "electron-packager": "^8.7.2",
     "elm": "^0.18.0",
-    "elm-test": "^0.18.0",
-    "mocha": "^3.2.0"
+    "elm-test": "^0.18.12",
+    "mocha": "^3.5.3"
   },
   "dependencies": {
-    "baconjs": "^0.7.89",
-    "ramda": "^0.23.0"
+    "baconjs": "^1.0.1",
+    "ramda": "^0.25.0"
   }
 }
