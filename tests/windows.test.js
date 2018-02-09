@@ -70,6 +70,20 @@ describe('windows', function () {
 		runActions()
 		return $windowsSizes.toPromise()
 	})
+
+	it('show new window on ready-to-show', () => {
+		const $newWindowRequest = new B.Bus()
+		const $finish = new B.Bus()
+		const $windows = Windows(fakeBrowserWindows.constructorFn, $newWindowRequest)
+
+		$windows.skip(1).onValue(windows => {
+			assert.isFalse(windows[0].isVisible())
+			fakeBrowserWindows.emit('ready-to-show', 0)
+			assert.isTrue(windows[0].isVisible())
+		})
+
+		$newWindowRequest.push()	
+	})
 })
 
 
@@ -85,6 +99,7 @@ const FakeBrowserWindows = () => {
 	const windows = []
 
 	return {
+		windows,
 		emit(eventName, windowId) {
 			if (windows[windowId]) {
 				windows[windowId].emit(eventName)
@@ -104,6 +119,7 @@ class FakeBrowserWindow extends EventEmitter {
 	constructor(webContents) {
 		super()
 		this.webContents = webContents
+		this.visible = false 
 	}
 
 	emit (eventName) {
@@ -111,4 +127,8 @@ class FakeBrowserWindow extends EventEmitter {
 	}
 
 	loadURL () {}
+
+	show () { this.visible = true }
+
+	isVisible () { return this.visible }
 }

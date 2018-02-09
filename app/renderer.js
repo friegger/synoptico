@@ -7,7 +7,7 @@ const {head} = require('ramda')
 
 window.Elm = elm
 
-const app = Elm.App.fullscreen()
+const app = Elm.App.fullscreen({platform: process.platform})
 
 const openDialog = () => {
 	const paths = dialog.showOpenDialog({
