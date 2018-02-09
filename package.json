@@ -11,7 +11,7 @@
     "package-linux": "electron-packager ./app Synoptico --platform linux --arch x64 --out out --overwrite",
     "package-linux-arm": "electron-packager ./app Synoptico --platform linux --arch armv7l --out out --overwrite",
     "package-windows": "electron-packager ./app Synoptico --platform win32 --arch x64 --out out --overwrite",
-    "package-all": "npm run package-darwin && npm run package-linux && npm run package-windows",
+    "package-all": "npm run package-darwin && npm run package-linux && npm run package-linux-arm && npm run package-windows",
     "js-tests": "mocha tests",
     "test": "npm run js-tests && npm run elm-tests"
   },

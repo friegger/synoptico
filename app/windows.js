@@ -31,7 +31,7 @@ exports.Windows = (BrowserWindow, $newWindowRequest) => {
 
 	const $windowClosed =
 		$windowCreated
-			.flatMap(window => B.fromEvent('closed', window))
+			.flatMap(window => B.fromEvent(window, 'closed'))
 			.map(event => event.sender)
 
 	return B.update(
