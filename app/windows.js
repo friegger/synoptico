@@ -1,6 +1,5 @@
-const {flip, reject, equals} = require('ramda')
+const {reject, equals} = require('ramda')
 const B = require('baconjs')
-const fromEvent = flip(B.fromEvent)
 
 const openWindow = BrowserWindow => message => {
 	const window = new BrowserWindow({width: 800, height: 600, show: false, backgroundColor: 'f6fffe'})
@@ -13,7 +12,7 @@ const openWindow = BrowserWindow => message => {
 }
 
 const showWindow = ({window, message}) => {
-	fromEvent('ready-to-show', window).onValue(event => {
+	B.fromEvent(window, 'ready-to-show').onValue(event => {
 		if (message) {
 			event.sender.send(message)
 		} else {
@@ -32,7 +31,7 @@ exports.Windows = (BrowserWindow, $newWindowRequest) => {
 
 	const $windowClosed =
 		$windowCreated
-			.flatMap(fromEvent('closed'))
+			.flatMap(window => B.fromEvent('closed', window))
 			.map(event => event.sender)
 
 	return B.update(
