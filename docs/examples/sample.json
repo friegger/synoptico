@@ -1,23 +1,23 @@
 {
 	"webviews": [{
-		"urls": ["https://bosh-ci.cpi.sapcloud.io/teams/main/pipelines/bosh-openstack-cpi", "https://www.heise.de"],
+		"urls": ["https://www.stern.de", "https://www.heise.de"],
 		"position": {"top":"0%","left":"0%","height":"50%","width":"50%","zIndex":"1"},
 		"timer": 5
 	},{
-		"urls": ["https://bosh-ci.cpi.sapcloud.io/teams/main/pipelines/certify-openstack"],
+		"urls": ["https://www.golem.de"],
 		"position": {"top":"50%","left":"0%","height":"50%","width":"50%","zIndex":"2"},
 		"timer": null
 	},{
-		"urls": ["https://bosh-ci.cpi.sapcloud.io/teams/main/pipelines/validator"],
+		"urls": ["https://www.ntv.de"],
 		"position": {"top":"75%","left":"0%","height":"25%","width":"20%","zIndex":"3"}
 	},{
-		"urls": ["https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/bosh-openstack-cpi-mitaka"],
+		"urls": ["https://www.spiegel.de"],
 		"position": {"top":"0%","left":"50%","height":"50%","width":"50%","zIndex":"4"}
 	},{
-		"urls": ["https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/certify-openstack-mitaka"],
+		"urls": ["https://github.com"],
 		"position": {"top":"50%","left":"50%","height":"50%","width":"50%","zIndex":"5"}
 	},{
-		"urls": ["https://bosh-cpi.ci.cf-app.com/teams/main/pipelines/validator-mitaka"],
+		"urls": ["https://www.sap.com"],
 		"position": {"top":"75%","left":"50%","height":"25%","width":"20%","zIndex":"6"}
 	}],
 	"name": "Synoptico Sample Dashboard"

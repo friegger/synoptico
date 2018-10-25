@@ -1,4 +1,4 @@
-const {app, BrowserWindow, Menu} = require('electron')
+const {app, BrowserWindow, Menu, powerSaveBlocker} = require('electron')
 const {WindowMenu, DockMenu} = require('./menu')
 const {equals, not} = require('ramda')
 const {Windows} = require('./windows')
@@ -6,6 +6,8 @@ const B = require('baconjs')
 
 const isDev = process.env.ELECTRON_ENV == 'development'
 app.commandLine.appendSwitch('--ignore-certificate-errors')
+
+powerSaveBlocker.start('prevent-app-suspension')
 
 B.fromEvent(app, 'ready').onValue(() => {
 	const $newWindowRequest = B.mergeAll(

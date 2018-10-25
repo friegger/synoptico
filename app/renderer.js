@@ -1,16 +1,16 @@
 const {remote, ipcRenderer} = require('electron')
 const {dialog} = remote
 const fs = require('fs')
-const elm = require('./elm')
+const { Elm } = require('./elm')
 const B = require('baconjs')
 const {head} = require('ramda')
 
-window.Elm = elm
+window.Elm = Elm
 
-const app = Elm.App.fullscreen({platform: process.platform})
+const app = Elm.App.init({flags: {platform: process.platform}})
 
 const openDialog = () => {
-	const paths = dialog.showOpenDialog({
+	const paths = dialog.showOpenDialogSync({
 		title: 'Open File'
 	})
 

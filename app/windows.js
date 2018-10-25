@@ -2,7 +2,10 @@ const {reject, equals} = require('ramda')
 const B = require('baconjs')
 
 const openWindow = BrowserWindow => message => {
-	const window = new BrowserWindow({width: 800, height: 600, show: false, backgroundColor: 'f6fffe'})
+	const window = new BrowserWindow({width: 800, height: 600, show: false, backgroundColor: 'f6fffe',  webPreferences: {
+		nodeIntegration: true,
+		webviewTag: true
+	}})
 	window.loadURL('file://' + __dirname + '/index.html')
 
 	return {

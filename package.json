@@ -2,8 +2,9 @@
   "name": "synoptico-dev",
   "version": "0.1.0",
   "scripts": {
+    "elm-version": "elm --version",
     "elm": "elm make elm/src/App.elm --output app/elm.js || true",
-    "elm-tests": "elm-test elm/tests/Tests.elm || true",
+    "elm-tests": "elm-test tests/Tests.elm || true",
     "elm:watch": "chokidar '**/*.elm' -c 'npm run elm'",
     "start": "ELECTRON_ENV=development electron app",
     "watch": "npm run start & npm run elm:watch & wait",
@@ -17,13 +18,13 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "chokidar": "^2.0.3",
-    "chokidar-cli": "^1.2.0",
-    "electron": "^1.8.4",
-    "electron-packager": "^8.7.2",
-    "elm": "^0.18.0",
-    "elm-test": "^0.18.12",
-    "mocha": "^3.5.3"
+    "chokidar": "^2.1.8",
+    "chokidar-cli": "^1.2.3",
+    "electron": "^7.0.0",
+    "electron-packager": "^14.0.0",
+    "elm": "^0.19.1-3",
+    "elm-test": "^0.19.1",
+    "mocha": "^5.0.0"
   },
   "dependencies": {
     "baconjs": "^1.0.1",
