@@ -1,22 +1,23 @@
-port module App exposing (..)
+port module App exposing (Flags, Model, Msg(..), Platform(..), ScreenPosition, SynopticoSet, WebView, createTimer, error, home, init, main, modifierIcon, openFile, openSynopticoSet, rotateUrl, rotateUrlOf, screenPositionDecoder, shift, subscriptions, synopticoSetDecoder, toPlatform, update, view, viewSynopticoSet, webView, webViewDecoder)
 
+import Array
+import Browser
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode as Decode exposing (Decoder, Error, int, string)
+import Json.Decode.Pipeline exposing (optional, required)
+import Json.Encode as Json
+import List
+import Maybe exposing (withDefault)
 import Svg as S
 import Svg.Attributes as SA
-import List
-import Dict
-import Json.Encode as Json
-import Time exposing (Time, second)
-import Maybe exposing (withDefault)
-import Array
-import Json.Decode as Decode
-import Json.Decode.Pipeline as DecodeP
+import Time exposing (Posix)
 
 
 main =
-    Html.programWithFlags { init = init, subscriptions = subscriptions, view = view, update = update }
+    Browser.document { init = init, subscriptions = subscriptions, view = view, update = update }
 
 
 
@@ -107,42 +108,47 @@ subscriptions model =
                 Nothing ->
                     []
     in
-        Sub.batch
-            [ openSynopticoSet (Decode.decodeValue (Decode.nullable synopticoSetDecoder) >> OpenSynopticoSet)
-            , Sub.batch (List.indexedMap createTimer webviews)
-            ]
+    Sub.batch
+        --[ openSynopticoSet (Decode.decodeValue (Decode.nullable synopticoSetDecoder) >> OpenSynopticoSet) -- can we have this as a separate function instead of composing it?
+        [ openSynopticoSet decodeIt -- can we have this as a separate function instead of composing it?
+        , Sub.batch (List.indexedMap createTimer webviews)
+        ]
+
+
+decodeIt value =
+    OpenSynopticoSet (Decode.decodeValue (Decode.nullable synopticoSetDecoder) value)
 
 
 createTimer : Int -> WebView -> Sub Msg
 createTimer index webview =
     case webview.timer of
         Just timer ->
-            Time.every ((toFloat timer) * second) (\_ -> RotateWebViewUrl index)
+            Time.every (toFloat timer * 1000) (\_ -> RotateWebViewUrl index)
 
         Nothing ->
             Sub.none
 
 
 synopticoSetDecoder =
-    DecodeP.decode SynopticoSet
-        |> DecodeP.required "webviews" (Decode.list webViewDecoder)
-        |> DecodeP.required "name" Decode.string
+    Decode.succeed SynopticoSet
+        |> required "webviews" (Decode.list webViewDecoder)
+        |> required "name" Decode.string
 
 
 webViewDecoder =
-    DecodeP.decode WebView
-        |> DecodeP.required "urls" (Decode.list Decode.string)
-        |> DecodeP.required "position" screenPositionDecoder
-        |> DecodeP.optional "timer" (Decode.nullable Decode.int) Nothing
+    Decode.succeed WebView
+        |> required "urls" (Decode.list Decode.string)
+        |> required "position" screenPositionDecoder
+        |> optional "timer" (Decode.nullable Decode.int) Nothing
 
 
 screenPositionDecoder =
-    DecodeP.decode ScreenPosition
-        |> DecodeP.required "top" Decode.string
-        |> DecodeP.required "left" Decode.string
-        |> DecodeP.required "height" Decode.string
-        |> DecodeP.required "width" Decode.string
-        |> DecodeP.required "zIndex" Decode.string
+    Decode.succeed ScreenPosition
+        |> required "top" Decode.string
+        |> required "left" Decode.string
+        |> required "height" Decode.string
+        |> required "width" Decode.string
+        |> required "zIndex" Decode.string
 
 
 
@@ -150,7 +156,7 @@ screenPositionDecoder =
 
 
 type Msg
-    = OpenSynopticoSet (Result String (Maybe SynopticoSet))
+    = OpenSynopticoSet (Result Error (Maybe SynopticoSet))
     | OpenFile
     | RotateWebViewUrl Int
 
@@ -163,8 +169,8 @@ update msg model =
                 Ok synopticoSet ->
                     ( { model | synopticoSet = synopticoSet }, Cmd.none )
 
-                Err errorMsg ->
-                    ( { model | synopticoSet = Nothing }, error errorMsg )
+                Err decodeErr ->
+                    ( { model | synopticoSet = Nothing }, error (Decode.errorToString decodeErr) )
 
         OpenFile ->
             ( model, openFile () )
@@ -173,10 +179,10 @@ update msg model =
             ( { model | synopticoSet = rotateUrlOf model.synopticoSet webviewIndex }, Cmd.none )
 
 
-rotateUrlOf set webviewIndex =
-    case set of
-        Just set ->
-            Just { set | webviews = rotateUrl webviewIndex set.webviews }
+rotateUrlOf synopticoSet webviewIndex =
+    case synopticoSet of
+        Just theSet ->
+            Just { theSet | webviews = rotateUrl webviewIndex theSet.webviews }
 
         Nothing ->
             Nothing
@@ -187,6 +193,7 @@ rotateUrl webviewIndex =
         (\index webview ->
             if webviewIndex == index then
                 { webview | urls = shift webview.urls }
+
             else
                 webview
         )
@@ -206,41 +213,42 @@ shift list =
 -- VIEW
 
 
-view : Model -> Html Msg
 view model =
-    div []
-        [ viewSynopticoSet model.synopticoSet model.platform ]
+    { title = "Synoptico"
+    , body = List.singleton (div [] [ viewSynopticoSet model.synopticoSet model.platform ])
+    }
 
 
 viewSynopticoSet : Maybe SynopticoSet -> Platform -> Html Msg
 viewSynopticoSet synopticoSet platform =
     case synopticoSet of
-        Just synopticoSet ->
-            div [ class "flex" ] (List.map webview synopticoSet.webviews)
+        Just theSet ->
+            div [ class "flex" ] (List.map webView theSet.webviews)
 
         Nothing ->
             div [] [ home (modifierIcon platform) ]
 
-webview : WebView -> Html msg
-webview { urls, position } =
+
+webView : WebView -> Html msg
+webView { urls, position } =
     div
         [ class "bg-washed-blue shadow-4"
-        , style
-            [ ( "position", "absolute" )
-            , ( "top", position.top )
-            , ( "left", position.left )
-            , ( "width", position.width )
-            , ( "height", position.height )
-            , ( "z-index", position.zIndex )
-            ]
+        , style "position" "absolute"
+        , style "top" position.top
+        , style "left" position.left
+        , style "width" position.width
+        , style "height" position.height
+        , style "z-index" position.zIndex
         ]
         [ node "webview"
             [ src <| withDefault "" <| List.head urls
-            , style [ ( "height", "100%" ), ( "width", "100%" ) ]
+            , style "height" "100%"
+            , style "width" "100%"
             , Html.Attributes.property "allowpopups" (Json.bool True)
             ]
             []
         ]
+
 
 modifierIcon : Platform -> Html msg
 modifierIcon platform =
@@ -257,8 +265,9 @@ modifierIcon platform =
                     []
                 ]
 
+
 home : Html Msg -> Html Msg
-home modifierIcon =
+home modIcon =
     div [ class "absolute w-100 h-100 tc flex flex-column items-center justify-center sans-serif black-10 bg-washed-blue" ]
         [ div [ class "f2 fw6 lh-title pa2" ]
             [ text "Drag & drop a Synoptico dashboard file here" ]
@@ -268,7 +277,7 @@ home modifierIcon =
             , a [ onClick OpenFile, class "pa2 bg-black-40 hover-bg-black-50 pointer bg-animate shadow-4 br2 white inline-flex" ]
                 [ span [ class "pr2" ]
                     [ text "Open" ]
-                , modifierIcon
+                , modIcon
                 , span [ class "" ]
                     [ text "O" ]
                 ]

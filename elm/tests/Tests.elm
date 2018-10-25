@@ -1,17 +1,18 @@
-module Tests exposing (..)
+module Tests exposing (dummyScreenPosition, notDarwinString, suite)
 
-import Test exposing (..)
-import Fuzz exposing (string, conditional)
-import Expect
-import String
 import App
-import Html.Attributes
+import Expect
+import Fuzz exposing (conditional, string)
 import Html
+import Html.Attributes
 import Json.Decode exposing (decodeString)
 import List
-import Test.Html.Query as Query
-import Test.Html.Selector exposing (tag, attribute)
+import String
 import Svg.Attributes as SAttr
+import Test exposing (..)
+import Test.Html.Query as Query
+import Test.Html.Selector exposing (attribute, tag)
+
 
 suite : Test
 suite =
@@ -23,17 +24,19 @@ suite =
                         App.init { platform = "darwin" }
                             |> Expect.equal
                                 ( { synopticoSet = Nothing
-                                  , platform = App.Darwin }
+                                  , platform = App.Darwin
+                                  }
                                 , Cmd.none
                                 )
-                ]           
+                ]
             , describe "when anything other than 'darwin' is given"
                 [ fuzz notDarwinString "returns initial model with platform Other" <|
                     \platform ->
                         App.init { platform = platform }
                             |> Expect.equal
                                 ( { synopticoSet = Nothing
-                                  , platform = App.Other }
+                                  , platform = App.Other
+                                  }
                                 , Cmd.none
                                 )
                 ]
@@ -70,7 +73,7 @@ suite =
                         expectedSet =
                             createSet [ "url5", "url6", "url4" ]
                     in
-                        App.rotateUrlOf set 1 |> Expect.equal expectedSet
+                    App.rotateUrlOf set 1 |> Expect.equal expectedSet
             ]
         , describe "synopticoSetDecoder"
             [ describe "when timer is given"
@@ -167,7 +170,6 @@ suite =
                                 |> Query.children [ tag "path" ]
                                 |> Query.first
                                 |> Query.has [ attribute <| SAttr.d "M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" ]
-
                     ]
                 , describe "when platform is Other"
                     [ test "returns the corresponding svg" <|
@@ -176,12 +178,10 @@ suite =
                                 |> Query.fromHtml
                                 |> Query.children [ tag "polyline" ]
                                 |> Query.first
-                                |> Query.has 
+                                |> Query.has
                                     [ attribute <| SAttr.points "18 15 12 9 6 15" ]
-
                     ]
                 ]
-
             ]
         ]
 
@@ -189,11 +189,13 @@ suite =
 dummyScreenPosition =
     App.ScreenPosition "" "" "" "" ""
 
+
 notDarwinString =
     let
-        condition = { retries = 5
-                    , fallback = \x -> "fallback"
-                    , condition = \x -> x == "darwin"
-                    }
+        condition =
+            { retries = 5
+            , fallback = \x -> "fallback"
+            , condition = \x -> x == "darwin"
+            }
     in
-        conditional condition string
+    conditional condition string
